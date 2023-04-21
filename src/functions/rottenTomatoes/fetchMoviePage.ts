@@ -2,6 +2,7 @@ import axios from "axios";
 import { load } from "cheerio";
 import parseSearchResult from "./parseSearchResults";
 import { AppError, HttpCode } from "../../expections/AppError";
+import createProxy from "../../utils/createProxy";
 
 async function fetchMoviePage(movieTitle: string) {
   const searchResult = await parseSearchResult(movieTitle);
@@ -13,7 +14,7 @@ async function fetchMoviePage(movieTitle: string) {
     });
   }
 
-  const response = await axios.get(searchResult.url);
+  const response = await axios.get(searchResult.url, { proxy: createProxy() });
 
   const html = response.data;
 
