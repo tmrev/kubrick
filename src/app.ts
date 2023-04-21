@@ -5,6 +5,9 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 import compression from "compression";
+import NodeCache from "node-cache";
+import { Sema } from "async-sema";
+
 import healthRouter from "./routes/health";
 import rottenTomatoesRouter from "./routes/rottenTomatoes";
 
@@ -16,6 +19,9 @@ const shouldCompress = (req: Request, res: Response) => {
   // Resort to standard compression
   return compression.filter(req, res);
 };
+
+export const cache = new NodeCache({ stdTTL: 3600 }); // Cache data for 1 hour
+export const rateLimiter = new Sema(5, { capacity: 5 }); // Allow up to 5 concurrent requests
 
 class App {
   constructor() {
