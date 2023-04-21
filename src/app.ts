@@ -6,6 +6,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import compression from "compression";
 import healthRouter from "./routes/health";
+import rottenTomatoesRouter from "./routes/rottenTomatoes";
 
 const shouldCompress = (req: Request, res: Response) => {
   if (req.headers["x-no-compression"]) {
@@ -50,6 +51,7 @@ class App {
 
   private routes(): void {
     this.app.use("/health", healthRouter);
+    this.app.use("/rottenTomatoes", rottenTomatoesRouter);
   }
 }
 
