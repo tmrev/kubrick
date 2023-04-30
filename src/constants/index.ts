@@ -43,6 +43,11 @@ const thePlayListUrls = {
   search: "https://theplaylist.net/",
 };
 
+const joBloUrls = {
+  base: "https://www.joblo.com",
+  search: "https://www.joblo.com/search/",
+};
+
 // eslint-disable-next-line no-shadow
 enum Sources {
   COLLIDER = "Collider",
@@ -50,6 +55,7 @@ enum Sources {
   EMPIRE = "Empire",
   HOLLYWOOD = "Hollywood Reporter",
   INDIE_WIRE = "Indie Wire",
+  JOBLO = "Jo Blo",
   PLAYLIST = "The Playlist",
   ROTTEN_TOMATOES = "Rotten Tomatoes",
   SCREEN_RANT = "Screen Rant",
@@ -64,6 +70,7 @@ export {
   indieWireUrls,
   colliderUrls,
   screenRantUrls,
+  joBloUrls,
   empireUrls,
   Sources,
   thePlayListUrls,

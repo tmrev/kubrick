@@ -1,11 +1,11 @@
 import { Router, Request, Response } from "express";
 import asyncMiddleware from "../../middleware/async.middleware";
 import errorHandler from "../../expections/ErrorHandler";
-import getNewsController from "../../controllers/news/getNews.controller";
+import getSearchNewsController from "../../controllers/news/getSearchNews.controller";
 
 const router: Router = Router();
 
-router.get("/", asyncMiddleware(getNewsController));
+router.get("/search", asyncMiddleware(getSearchNewsController));
 
 const newsRouter: Router = router;
 

@@ -1,23 +1,28 @@
 import { Browser, Builder } from "selenium-webdriver";
+import chrome from "selenium-webdriver/chrome";
 import { varietyUrls } from "../../constants";
-import { cache } from "../../app";
 
 async function fetchVarietyResults(movieTitle: string) {
-  const searchUrl = `${varietyUrls.search}?q=${encodeURIComponent(movieTitle)}`;
+  const driver = new Builder()
+    .forBrowser(Browser.CHROME)
+    .setChromeOptions(new chrome.Options().headless())
+    .build();
 
-  const siteCache = cache.get(movieTitle) as string;
+  try {
+    const searchUrl = `${varietyUrls.search}?q=${encodeURIComponent(
+      movieTitle
+    )}`;
 
-  if (siteCache) return siteCache;
+    await driver.get(searchUrl);
 
-  const driver = await new Builder().forBrowser(Browser.CHROME).build();
+    const site = await driver.getPageSource();
 
-  await driver.get(searchUrl);
+    await driver.close();
 
-  const site = await driver.getPageSource();
-  cache.set(movieTitle, site);
-
-  await driver.close();
-
-  return site;
+    return site;
+  } catch (error) {
+    await driver.close();
+    return "";
+  }
 }
 export default fetchVarietyResults;
