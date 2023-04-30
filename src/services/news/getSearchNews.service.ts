@@ -5,7 +5,6 @@ import parseDeadlineSearchResult from "../../functions/deadline/parseSearchResul
 import parseEmpireSearchResult from "../../functions/empire/parseSearchResults";
 import parseHollywoodSearchResult from "../../functions/hollywood/parseSearchResults";
 import parseIndieWireSearchResult from "../../functions/indieWire/parseSearchResults";
-import parseJoBloResult from "../../functions/joBlo/parseSearchResults";
 import parsePlaylistResult from "../../functions/playlist/parseSearchResults";
 import parseScreenRantSearchResult from "../../functions/screenRant/parseSearchResults";
 import parseVarietySearchResult from "../../functions/variety/parseSearchResults";
@@ -30,7 +29,6 @@ const getSearchNewsService = async (movieTitle: string) => {
     parseScreenRantSearchResult(movieTitle),
     parseEmpireSearchResult(movieTitle),
     parsePlaylistResult(movieTitle),
-    parseJoBloResult(movieTitle),
   ];
 
   await rateLimiter.acquire();
@@ -40,12 +38,7 @@ const getSearchNewsService = async (movieTitle: string) => {
     if (result.status === "fulfilled") {
       if (result.value && result.value.length) {
         data.push(...result.value);
-      } else {
-        console.log(result);
       }
-    }
-    if (result.status === "rejected") {
-      console.log(result);
     }
   });
   rateLimiter.release();

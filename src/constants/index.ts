@@ -48,6 +48,8 @@ const joBloUrls = {
   search: "https://www.joblo.com/search/",
 };
 
+const popularUrl = "https://editorial.rottentomatoes.com/guide/popular-movies/";
+
 // eslint-disable-next-line no-shadow
 enum Sources {
   COLLIDER = "Collider",
@@ -74,4 +76,5 @@ export {
   empireUrls,
   Sources,
   thePlayListUrls,
+  popularUrl,
 };

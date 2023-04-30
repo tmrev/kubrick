@@ -11,6 +11,7 @@ import { Sema } from "async-sema";
 import healthRouter from "./routes/health";
 import rottenTomatoesRouter from "./routes/rottenTomatoes";
 import newsRouter from "./routes/news";
+import popularRouter from "./routes/popular";
 
 const shouldCompress = (req: Request, res: Response) => {
   if (req.headers["x-no-compression"]) {
@@ -60,6 +61,7 @@ class App {
     this.app.use("/health", healthRouter);
     this.app.use("/rottenTomatoes", rottenTomatoesRouter);
     this.app.use("/news", newsRouter);
+    this.app.use("/popular", popularRouter);
   }
 }
 
