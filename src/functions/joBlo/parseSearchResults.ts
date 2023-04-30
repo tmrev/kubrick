@@ -19,7 +19,7 @@ async function parseJoBloResult(movieTitle: string) {
         author: null,
         publishedDate: dayjs(
           element("time.published-date time-ago").attr("datetime")
-        ),
+        ).format(),
         type: "Article",
         snippet: element(".post-excerpt > p").text().trim(),
         source: Sources.JOBLO,

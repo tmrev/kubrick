@@ -19,7 +19,7 @@ async function parseScreenRantSearchResult(movieTitle: string) {
         author: element("a.display-card-author").text().trim(),
         publishedDate: dayjs(
           element("time.display-card-date").attr("datetime")
-        ),
+        ).format(),
         type: "Article",
         snippet: element("p.display-card-excerpt").text().trim(),
         source: Sources.SCREEN_RANT,

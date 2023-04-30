@@ -23,7 +23,7 @@ async function parseIndieWireSearchResult(movieTitle: string) {
           element("div.result-content > div.byline > span:nth-child(2)")
             .text()
             .trim()
-        ),
+        ).format(),
         type: element("div.result-content > div.byline > span:nth-child(3)")
           .text()
           .trim(),

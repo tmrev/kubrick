@@ -17,7 +17,9 @@ async function parsePlaylistResult(movieTitle: string) {
         title: element("h2.cb-post-title > a").text().trim(),
         img: element("div.cs-mask > a > img").attr("src"),
         author: element("div.cb-author > a").text().trim(),
-        publishedDate: dayjs(element("div.cb-date > time").attr("datetime")),
+        publishedDate: dayjs(
+          element("div.cb-date > time").attr("datetime")
+        ).format(),
         type: "Article",
         snippet: element(".cb-excerpt").text().trim(),
         source: Sources.PLAYLIST,

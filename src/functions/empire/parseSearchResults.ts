@@ -21,7 +21,7 @@ async function parseEmpireSearchResult(movieTitle: string) {
         title: element("a.gs.title").text().trim(),
         img: element("img.gs-image").attr("src"),
         author: null,
-        publishedDate: dayjs(date.trim()),
+        publishedDate: dayjs(date.trim()).format(),
         type: "Article",
         snippet: snippet.trim(),
         source: Sources.EMPIRE,
