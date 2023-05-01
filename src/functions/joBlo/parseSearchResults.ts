@@ -1,7 +1,7 @@
 import { load } from "cheerio";
-import dayjs from "dayjs";
 import fetchJoBloResults from "./fetchSearchResults";
 import { Sources } from "../../constants";
+import parseSearchResult from "../../utils/parseSearchResult";
 
 async function parseJoBloResult(movieTitle: string) {
   const html = await fetchJoBloResults(movieTitle);
@@ -12,18 +12,17 @@ async function parseJoBloResult(movieTitle: string) {
     .map((i, el) => {
       const element = load(el);
 
-      return {
+      const payload = {
         url: element("div.featured-media-inner > a").attr("href"),
         title: element("h3 > a").text().trim(),
         img: element("div.featured-media-inner > a > img").attr("src"),
-        author: null,
-        publishedDate: dayjs(
-          element("time.published-date time-ago").attr("datetime")
-        ).format(),
+        author: "",
+        publishedDate: element("time.published-date time-ago").attr("datetime"),
         type: "Article",
         snippet: element(".post-excerpt > p").text().trim(),
-        source: Sources.JOBLO,
       };
+
+      return parseSearchResult(payload, Sources.JOBLO);
     })
     .get();
 

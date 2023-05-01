@@ -1,20 +1,23 @@
-// import { mongoService } from "../..";
+import { mongoService } from "../..";
 import { cache, rateLimiter } from "../../app";
 import parseColliderSearchResult from "../../functions/collider/parseSearchResults";
 import parseDeadlineSearchResult from "../../functions/deadline/parseSearchResults";
 import parseEmpireSearchResult from "../../functions/empire/parseSearchResults";
 import parseHollywoodSearchResult from "../../functions/hollywood/parseSearchResults";
 import parseIndieWireSearchResult from "../../functions/indieWire/parseSearchResults";
+import parseJoBloResult from "../../functions/joBlo/parseSearchResults";
 import parsePlaylistResult from "../../functions/playlist/parseSearchResults";
 import parseScreenRantSearchResult from "../../functions/screenRant/parseSearchResults";
 import parseVarietySearchResult from "../../functions/variety/parseSearchResults";
+import { ParseResults } from "../../models/parseResults";
+import { sentimentSummary } from "../../utils/sentiment";
 
 const getSearchNewsService = async (movieTitle: string) => {
-  const data: any[] = [];
+  const data: ParseResults[] = [];
 
-  // const db = mongoService.db("news").collection("articles");
+  const db = mongoService.db("news").collection("articles");
 
-  // const bulkNews = db.initializeUnorderedBulkOp();
+  const bulkNews = db.initializeUnorderedBulkOp();
 
   const newsCache = cache.get(movieTitle);
 
@@ -29,6 +32,7 @@ const getSearchNewsService = async (movieTitle: string) => {
     parseScreenRantSearchResult(movieTitle),
     parseEmpireSearchResult(movieTitle),
     parsePlaylistResult(movieTitle),
+    parseJoBloResult(movieTitle),
   ];
 
   await rateLimiter.acquire();
@@ -43,25 +47,34 @@ const getSearchNewsService = async (movieTitle: string) => {
   });
   rateLimiter.release();
 
-  cache.set(movieTitle, { success: true, body: data });
+  const consensus = sentimentSummary(data);
 
-  // data.forEach((value) => {
-  //   bulkNews
-  //     .find({
-  //       ...value,
-  //     })
-  //     .upsert()
-  //     .replaceOne({
-  //       ...value,
-  //     });
-  // });
-
-  // bulkNews.execute();
-
-  return {
+  const payload = {
     success: true,
-    body: data,
+    body: {
+      consensus,
+      totalResults: data.length,
+      results: data,
+    },
   };
+
+  cache.set(movieTitle, payload);
+
+  data.forEach((value) => {
+    bulkNews
+      .find({
+        title: value.title,
+        author: value.author,
+      })
+      .upsert()
+      .replaceOne({
+        ...value,
+      });
+  });
+
+  bulkNews.execute();
+
+  return payload;
 };
 
 export default getSearchNewsService;

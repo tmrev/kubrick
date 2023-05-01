@@ -1,7 +1,7 @@
 import { load } from "cheerio";
-import dayjs from "dayjs";
 import fetchScreenRantResults from "./fetchSearchResults";
 import { Sources, screenRantUrls } from "../../constants";
+import parseSearchResult from "../../utils/parseSearchResult";
 
 async function parseScreenRantSearchResult(movieTitle: string) {
   const html = await fetchScreenRantResults(movieTitle);
@@ -12,18 +12,17 @@ async function parseScreenRantSearchResult(movieTitle: string) {
     .map((i, el) => {
       const element = load(el);
 
-      return {
+      const payload = {
         url: `${screenRantUrls.base}${element("a.dc-img-link").attr("href")}`,
         title: element("h5.display-card-title > a").text().trim(),
         img: element("figure > picture > source:nth-child(1)").attr("srcset"),
         author: element("a.display-card-author").text().trim(),
-        publishedDate: dayjs(
-          element("time.display-card-date").attr("datetime")
-        ).format(),
+        publishedDate: element("time.display-card-date").attr("datetime"),
         type: "Article",
         snippet: element("p.display-card-excerpt").text().trim(),
-        source: Sources.SCREEN_RANT,
       };
+
+      return parseSearchResult(payload, Sources.SCREEN_RANT);
     })
     .get();
 

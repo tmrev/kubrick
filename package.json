@@ -32,6 +32,7 @@
     "@types/morgan": "^1.9.4",
     "@types/node": "^18.15.13",
     "@types/selenium-webdriver": "^4.1.14",
+    "@types/sentiment": "^5.0.1",
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
@@ -69,7 +70,8 @@
     "mongodb": "^5.3.0",
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
-    "selenium-webdriver": "^4.9.0"
+    "selenium-webdriver": "^4.9.0",
+    "sentiment": "^5.0.2"
   },
   "restartable": "rs",
   "ignore": [
