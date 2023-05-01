@@ -16,8 +16,12 @@ async function parsePopularResult() {
         title: element("h2 > a").text().trim(),
         img: element("a.article_movie_poster > div > img").attr("src"),
         type: "Popular",
-        consensus: element("div.critics-consensus").text().trim(),
-        snippet: element("div.synopsis").text().trim(),
+        consensus: element("div.critics-consensus").text().split(":")[1].trim(),
+        snippet: `${element("div.synopsis")
+          .text()
+          .split(":")[1]
+          .split("...")[0]
+          .trim()}...`,
         rank: element("div.countdown-index").text().trim(),
         source: Sources.ROTTEN_TOMATOES,
       };
