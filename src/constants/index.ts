@@ -48,6 +48,8 @@ const joBloUrls = {
   search: "https://www.joblo.com/search/",
 };
 
+const boxOfficeUrl = "https://www.boxofficemojo.com/title/";
+
 const popularUrl = "https://editorial.rottentomatoes.com/guide/popular-movies/";
 
 // eslint-disable-next-line no-shadow
@@ -77,4 +79,5 @@ export {
   Sources,
   thePlayListUrls,
   popularUrl,
+  boxOfficeUrl,
 };
