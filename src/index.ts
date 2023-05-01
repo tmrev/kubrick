@@ -14,16 +14,16 @@ const host = process.env.DB_HOST;
 const uri = `mongodb+srv://${user}:${password}@${host}`;
 
 // eslint-disable-next-line import/prefer-default-export
-export const mongoService = new MongoClient(uri);
+// export const mongoService = new MongoClient(uri);
 
-mongoService
-  .connect()
-  .then(() => {
-    console.log("mongodb is connected");
-  })
-  .catch((e) => {
-    console.error(e);
-  });
+// mongoService
+//   .connect()
+//   .then(() => {
+//     console.log("mongodb is connected");
+//   })
+//   .catch((e) => {
+//     console.error(e);
+//   });
 
 app.listen(PORT, () => {
   console.log(`server started at http://localhost:${PORT}`);

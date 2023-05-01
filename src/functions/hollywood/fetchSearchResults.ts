@@ -1,12 +1,8 @@
-import { Browser, Builder } from "selenium-webdriver";
-import chrome from "selenium-webdriver/chrome";
 import { hollywoodUrls } from "../../constants";
+import webDriver from "../browser";
 
 async function fetchHollywoodResults(movieTitle: string) {
-  const driver = await new Builder()
-    .forBrowser(Browser.CHROME)
-    .setChromeOptions(new chrome.Options().headless())
-    .build();
+  const driver = await webDriver();
 
   try {
     const searchUrl = `${hollywoodUrls.search}?q=${encodeURIComponent(

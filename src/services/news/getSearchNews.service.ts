@@ -1,4 +1,4 @@
-import { mongoService } from "../..";
+// import { mongoService } from "../..";
 import { cache, rateLimiter } from "../../app";
 import parseColliderSearchResult from "../../functions/collider/parseSearchResults";
 import parseDeadlineSearchResult from "../../functions/deadline/parseSearchResults";
@@ -12,9 +12,9 @@ import parseVarietySearchResult from "../../functions/variety/parseSearchResults
 const getSearchNewsService = async (movieTitle: string) => {
   const data: any[] = [];
 
-  const db = mongoService.db("news").collection("articles");
+  // const db = mongoService.db("news").collection("articles");
 
-  const bulkNews = db.initializeUnorderedBulkOp();
+  // const bulkNews = db.initializeUnorderedBulkOp();
 
   const newsCache = cache.get(movieTitle);
 
@@ -45,18 +45,18 @@ const getSearchNewsService = async (movieTitle: string) => {
 
   cache.set(movieTitle, { success: true, body: data });
 
-  data.forEach((value) => {
-    bulkNews
-      .find({
-        ...value,
-      })
-      .upsert()
-      .replaceOne({
-        ...value,
-      });
-  });
+  // data.forEach((value) => {
+  //   bulkNews
+  //     .find({
+  //       ...value,
+  //     })
+  //     .upsert()
+  //     .replaceOne({
+  //       ...value,
+  //     });
+  // });
 
-  bulkNews.execute();
+  // bulkNews.execute();
 
   return {
     success: true,

@@ -1,12 +1,9 @@
-import { Browser, Builder, By, until } from "selenium-webdriver";
-import chrome from "selenium-webdriver/chrome";
+import { By, until } from "selenium-webdriver";
 import { empireUrls } from "../../constants";
+import webDriver from "../browser";
 
 async function fetchEmpireResults(movieTitle: string) {
-  const driver = await new Builder()
-    .forBrowser(Browser.CHROME)
-    .setChromeOptions(new chrome.Options().headless())
-    .build();
+  const driver = await webDriver();
 
   try {
     const searchUrl = empireUrls.base;

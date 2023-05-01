@@ -1,12 +1,8 @@
-import { Browser, Builder } from "selenium-webdriver";
-import chrome from "selenium-webdriver/chrome";
 import { indieWireUrls } from "../../constants";
+import webDriver from "../browser";
 
 async function fetchIndieWireResults(movieTitle: string) {
-  const driver = await new Builder()
-    .forBrowser(Browser.CHROME)
-    .setChromeOptions(new chrome.Options().headless())
-    .build();
+  const driver = await webDriver();
 
   try {
     const searchUrl = `${indieWireUrls.search}?q=${encodeURIComponent(
