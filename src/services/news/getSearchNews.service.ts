@@ -5,12 +5,15 @@ import parseDeadlineSearchResult from "../../functions/deadline/parseSearchResul
 import parseEmpireSearchResult from "../../functions/empire/parseSearchResults";
 import parseHollywoodSearchResult from "../../functions/hollywood/parseSearchResults";
 import parseIndieWireSearchResult from "../../functions/indieWire/parseSearchResults";
+import parseJoBloResult from "../../functions/joBlo/parseSearchResults";
 import parsePlaylistResult from "../../functions/playlist/parseSearchResults";
 import parseScreenRantSearchResult from "../../functions/screenRant/parseSearchResults";
 import parseVarietySearchResult from "../../functions/variety/parseSearchResults";
+import { ParseResults } from "../../models/parseResults";
+import { sentimentSummary } from "../../utils/sentiment";
 
 const getSearchNewsService = async (movieTitle: string) => {
-  const data: any[] = [];
+  const data: ParseResults[] = [];
 
   const db = mongoService.db("news").collection("articles");
 
@@ -29,6 +32,7 @@ const getSearchNewsService = async (movieTitle: string) => {
     parseScreenRantSearchResult(movieTitle),
     parseEmpireSearchResult(movieTitle),
     parsePlaylistResult(movieTitle),
+    parseJoBloResult(movieTitle),
   ];
 
   await rateLimiter.acquire();
@@ -43,12 +47,24 @@ const getSearchNewsService = async (movieTitle: string) => {
   });
   rateLimiter.release();
 
-  cache.set(movieTitle, { success: true, body: data });
+  const consensus = sentimentSummary(data);
+
+  const payload = {
+    success: true,
+    body: {
+      consensus,
+      totalResults: data.length,
+      results: data,
+    },
+  };
+
+  cache.set(movieTitle, payload);
 
   data.forEach((value) => {
     bulkNews
       .find({
-        ...value,
+        title: value.title,
+        author: value.author,
       })
       .upsert()
       .replaceOne({
@@ -58,10 +74,7 @@ const getSearchNewsService = async (movieTitle: string) => {
 
   bulkNews.execute();
 
-  return {
-    success: true,
-    body: data,
-  };
+  return payload;
 };
 
 export default getSearchNewsService;

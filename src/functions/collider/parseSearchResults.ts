@@ -2,6 +2,7 @@ import { load } from "cheerio";
 import dayjs from "dayjs";
 import fetchColliderResults from "./fetchSearchResults";
 import { Sources, colliderUrls } from "../../constants";
+import parseSearchResult from "../../utils/parseSearchResult";
 
 async function parseColliderSearchResult(movieTitle: string) {
   const html = await fetchColliderResults(movieTitle);
@@ -12,7 +13,7 @@ async function parseColliderSearchResult(movieTitle: string) {
     .map((i, el) => {
       const element = load(el);
 
-      return {
+      const payload = {
         url: `${colliderUrls.base}${element("a.dc-img-link").attr("href")}`,
         title: element("h5.display-card-title > a").text().trim(),
         img: element("figure > picture > source:nth-child(1)").attr("srcset"),
@@ -22,8 +23,9 @@ async function parseColliderSearchResult(movieTitle: string) {
         ).format(),
         type: "Article",
         snippet: element("p.display-card-excerpt").text().trim(),
-        source: Sources.COLLIDER,
       };
+
+      return parseSearchResult(payload, Sources.COLLIDER);
     })
     .get();
 

@@ -1,7 +1,7 @@
 import { load } from "cheerio";
-import dayjs from "dayjs";
 import fetchEmpireResults from "./fetchSearchResults";
 import { Sources } from "../../constants";
+import parseSearchResult from "../../utils/parseSearchResult";
 
 async function parseEmpireSearchResult(movieTitle: string) {
   const html = await fetchEmpireResults(movieTitle);
@@ -16,16 +16,17 @@ async function parseEmpireSearchResult(movieTitle: string) {
 
       const [date, snippet] = data.split("...");
 
-      return {
+      const payload = {
         url: element("a.gs-title").attr("href"),
         title: element("a.gs.title").text().trim(),
         img: element("img.gs-image").attr("src"),
-        author: null,
-        publishedDate: dayjs(date.trim()).format(),
+        author: "",
+        publishedDate: date.trim(),
         type: "Article",
         snippet: snippet.trim(),
-        source: Sources.EMPIRE,
       };
+
+      return parseSearchResult(payload, Sources.EMPIRE);
     })
     .get();
 

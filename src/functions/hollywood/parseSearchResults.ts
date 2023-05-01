@@ -2,6 +2,7 @@ import { load } from "cheerio";
 import dayjs from "dayjs";
 import fetchHollywoodResults from "./fetchSearchResults";
 import { Sources } from "../../constants";
+import parseSearchResult from "../../utils/parseSearchResult";
 
 async function parseHollywoodSearchResult(movieTitle: string) {
   const html = await fetchHollywoodResults(movieTitle);
@@ -12,7 +13,7 @@ async function parseHollywoodSearchResult(movieTitle: string) {
     .map((i, el) => {
       const element = load(el);
 
-      return {
+      const payload = {
         url: element("div.result-title > a").attr("href"),
         title: element("div.result-title > a").text().trim(),
         img: element("div.result-image > img").attr("src"),
@@ -28,8 +29,9 @@ async function parseHollywoodSearchResult(movieTitle: string) {
           .text()
           .trim(),
         snippet: element("div.result-content > div.text-block").text().trim(),
-        source: Sources.HOLLYWOOD,
       };
+
+      return parseSearchResult(payload, Sources.HOLLYWOOD);
     })
     .get();
 
