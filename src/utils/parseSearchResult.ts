@@ -22,7 +22,9 @@ const parseSearchResult = (data: Payload, source: Sources): ParseResults => {
     source,
     title: data.title || null,
     type: data.type,
-    publishedDate: dayjs(data.publishedDate).format() || null,
+    publishedDate: data.publishedDate
+      ? dayjs(data.publishedDate).format()
+      : null,
     sentiment: sentimentAnalyze(data.snippet),
   };
 };
