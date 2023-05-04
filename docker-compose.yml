@@ -24,7 +24,7 @@ services:
       - '/var/run/docker.sock:/tmp/docker.sock:ro'
       - '/etc/nginx/certs'
     depends_on:
-      - kubrick_news_api
+      - kubrick_news_api_container
   letsencrypt-nginx-proxy-companion-2:
     container_name: letsencrypt-2
     restart: always
