@@ -1,13 +1,11 @@
 import { mongoService } from "../..";
 import { cache, rateLimiter } from "../../app";
+import manageParseContent from "../../functions/browser/manageParseContent";
+import createScraper from "../../functions/browser/puppeteer";
+import createUrls from "../../functions/browser/urls";
 import parseColliderSearchResult from "../../functions/collider/parseSearchResults";
-import parseDeadlineSearchResult from "../../functions/deadline/parseSearchResults";
-import parseEmpireSearchResult from "../../functions/empire/parseSearchResults";
-import parseHollywoodSearchResult from "../../functions/hollywood/parseSearchResults";
-import parseIndieWireSearchResult from "../../functions/indieWire/parseSearchResults";
 import parsePlaylistResult from "../../functions/playlist/parseSearchResults";
 import parseScreenRantSearchResult from "../../functions/screenRant/parseSearchResults";
-import parseVarietySearchResult from "../../functions/variety/parseSearchResults";
 import { ParseResults } from "../../models/parseResults";
 import { sentimentSummary } from "../../utils/sentiment";
 
@@ -22,18 +20,34 @@ const gatherNewsService = async (movieTitle: string) => {
 
   if (newsCache) return newsCache;
 
+  await rateLimiter.acquire();
+
+  const urls = createUrls(movieTitle);
+
+  const scraper = await createScraper(3);
+
+  try {
+    await Promise.allSettled(
+      urls.map(async (url) => {
+        const content = await scraper?.enqueue(url);
+        const val = await manageParseContent(url, content);
+        if (val?.length) {
+          data.push(...val);
+        }
+      })
+    );
+  } catch (error) {
+    console.error(error);
+  }
+
+  scraper?.close();
+
   const promiseArr = [
-    parseHollywoodSearchResult(movieTitle),
-    parseVarietySearchResult(movieTitle),
-    parseDeadlineSearchResult(movieTitle),
-    parseIndieWireSearchResult(movieTitle),
     parseColliderSearchResult(movieTitle),
     parseScreenRantSearchResult(movieTitle),
-    parseEmpireSearchResult(movieTitle),
     parsePlaylistResult(movieTitle),
   ];
 
-  await rateLimiter.acquire();
   const results = await Promise.allSettled(promiseArr);
 
   results.forEach((result) => {

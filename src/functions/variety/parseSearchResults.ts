@@ -1,12 +1,9 @@
 import { load } from "cheerio";
-import fetchVarietyResults from "./fetchSearchResults";
 import { Sources } from "../../constants";
 import { ParseResults } from "../../models/parseResults";
 import parseSearchResult from "../../utils/parseSearchResult";
 
-async function parseVarietySearchResult(movieTitle: string) {
-  const html = await fetchVarietyResults(movieTitle);
-
+async function parseVarietySearchResult(html: string) {
   const $ = load(html);
 
   const mediaResults: ParseResults[] = $("div.result")
