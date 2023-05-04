@@ -1,15 +1,11 @@
 import { Browser, Builder } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chromiumBinary = require("chromium-binary");
-
 const webDriver = async () => {
   try {
     const options = new chrome.Options();
 
     options.headless();
-    // options.setChromeBinaryPath(chromiumBinary.path);
     options.addArguments("start-maximized"); // open Browser in maximized mode
     options.addArguments("disable-infobars"); // disabling infobars
     options.addArguments("--disable-extensions"); // disabling extensions

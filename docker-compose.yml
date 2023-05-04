@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+  kubrick_news_api_container:
+    container_name: kubrick_news_api
+    restart: always
+    build: './'
+    environment:
+      VIRTUAL_HOST: news.tmrev.io
+      LETSENCRYPT_HOST: news.tmrev.io
+    expose:
+      - '8080'
+    ports: 
+      - "8080:8080"  
+  nginx-proxy-2:
+    container_name: nginx_container-2
+    restart: always
+    image: jwilder/nginx-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - '/etc/nginx/vhost.d'
+      - '/usr/share/nginx/html'
+      - '/var/run/docker.sock:/tmp/docker.sock:ro'
+      - '/etc/nginx/certs'
+    depends_on:
+      - kubrick_news_api
+  letsencrypt-nginx-proxy-companion-2:
+    container_name: letsencrypt-2
+    restart: always
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    volumes_from:
+      - 'nginx-proxy-2'
