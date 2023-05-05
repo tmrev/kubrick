@@ -49,9 +49,8 @@ const searchNewsService = async (query: GetNewsQuery) => {
 
   const results = await db
     .find(findQuery)
-    .sort({ publishedDate: -1 })
-    .skip(query.offset || 0)
-    .limit(query.limit || 20)
+    .skip(Number(query.offset) || 0)
+    .limit(Number(query.limit) || 20)
     .toArray();
 
   const totalArticles = await db.estimatedDocumentCount();
