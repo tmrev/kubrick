@@ -4,7 +4,12 @@ import errorHandler from "../../expections/ErrorHandler";
 import gatherNewsController from "../../controllers/news/gatherNews.controller";
 import getNewsController from "../../controllers/news/getNews.controller";
 import searchNewsController from "../../controllers/news/searchNews.controller";
-import { getNewsValidation, searchNewsValidation } from "../../validation/news";
+import {
+  getNewsValidation,
+  advancedSearchNewsValidation,
+  basicSearchNewsValidation,
+  trendingNewsValidation,
+} from "../../validation/news";
 import trendingNewsController from "../../controllers/news/trendingNews.controller";
 
 const router: Router = Router();
@@ -12,12 +17,22 @@ const router: Router = Router();
 router.get("/", getNewsValidation(), asyncMiddleware(getNewsController));
 
 router.get(
-  "/search",
-  searchNewsValidation(),
+  "/advanced/search",
+  advancedSearchNewsValidation(),
   asyncMiddleware(searchNewsController)
 );
 
-router.get("/trending", asyncMiddleware(trendingNewsController));
+router.get(
+  "/basic/search",
+  basicSearchNewsValidation(),
+  asyncMiddleware(searchNewsController)
+);
+
+router.get(
+  "/trending",
+  trendingNewsValidation(),
+  asyncMiddleware(trendingNewsController)
+);
 
 router.get("/gather", asyncMiddleware(gatherNewsController));
 

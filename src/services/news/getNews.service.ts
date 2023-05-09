@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import { mongoService } from "../..";
 import DB from "../../constants/db";
+import { SourceType } from "../../constants";
+import configureSource from "../../utils/configureSource";
 
 interface GetNewsQuery {
   limit?: number;
@@ -12,10 +14,14 @@ interface GetNewsQuery {
   type?: string;
 }
 
-const getNewsService = async (query: GetNewsQuery) => {
+const getNewsService = async (query: GetNewsQuery, sourceType: SourceType) => {
   const db = mongoService.db(DB.name).collection(DB.collections.articles);
 
   let findQuery = {};
+
+  const limitFilter = configureSource(sourceType);
+
+  findQuery = { ...findQuery, ...limitFilter };
 
   if (query.source) {
     findQuery = { ...findQuery, source: query.source };

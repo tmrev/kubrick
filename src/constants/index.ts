@@ -72,6 +72,30 @@ enum Sources {
   VARIETY = "Variety",
 }
 
+export type SourceType = "FREE_SOURCES" | "PRO_SOURCES" | "ULTRA_SOURCES";
+
+const FREE_SOURCES = [Sources.INDIE_WIRE, Sources.SCREEN_RANT];
+const PRO_SOURCES = [
+  Sources.COLLIDER,
+  Sources.EMPIRE,
+  Sources.HOLLYWOOD,
+  Sources.PLAYLIST,
+  Sources.SCREEN_RANT,
+  Sources.INDIE_WIRE,
+];
+const ULTRA_SOURCES = [
+  Sources.COLLIDER,
+  Sources.DEADLINE,
+  Sources.EMPIRE,
+  Sources.HOLLYWOOD,
+  Sources.INDIE_WIRE,
+  Sources.JOBLO,
+  Sources.PLAYLIST,
+  Sources.ROTTEN_TOMATOES,
+  Sources.SCREEN_RANT,
+  Sources.VARIETY,
+];
+
 export {
   rottenTomatoesUrls,
   varietyUrls,
@@ -87,4 +111,7 @@ export {
   popularUrl,
   boxOfficeUrl,
   TWITTER_TOKEN,
+  ULTRA_SOURCES,
+  PRO_SOURCES,
+  FREE_SOURCES,
 };
