@@ -5,6 +5,7 @@ import gatherNewsController from "../../controllers/news/gatherNews.controller";
 import getNewsController from "../../controllers/news/getNews.controller";
 import searchNewsController from "../../controllers/news/searchNews.controller";
 import { getNewsValidation, searchNewsValidation } from "../../validation/news";
+import trendingNewsController from "../../controllers/news/trendingNews.controller";
 
 const router: Router = Router();
 
@@ -15,6 +16,8 @@ router.get(
   searchNewsValidation(),
   asyncMiddleware(searchNewsController)
 );
+
+router.get("/trending", asyncMiddleware(trendingNewsController));
 
 router.get("/gather", asyncMiddleware(gatherNewsController));
 

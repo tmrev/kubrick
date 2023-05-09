@@ -1,4 +1,10 @@
 /* eslint-disable no-unused-vars */
+import { config } from "dotenv";
+
+config();
+
+const TWITTER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
+
 const rottenTomatoesUrls = {
   base: "https://www.rottentomatoes.com",
   search: "https://www.rottentomatoes.com/search",
@@ -80,4 +86,5 @@ export {
   thePlayListUrls,
   popularUrl,
   boxOfficeUrl,
+  TWITTER_TOKEN,
 };
