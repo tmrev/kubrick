@@ -35,7 +35,10 @@ const getNewsValidation = () => {
     header("sources")
       .isIn(sources)
       .withMessage(`sources must be one of: ${sources.map((v) => v)}`),
-    header("sentiment").isBoolean().toBoolean(),
+    header("sentiment")
+      .isBoolean()
+      .withMessage("sentiment must be a boolean.")
+      .toBoolean(),
   ];
 };
 
@@ -54,6 +57,7 @@ const advancedSearchNewsValidation = () => {
     query("offset")
       .isNumeric()
       .withMessage("offset must be a number.")
+      .toInt()
       .optional(),
     query("source")
       .isString()
@@ -62,6 +66,7 @@ const advancedSearchNewsValidation = () => {
     query("limit")
       .isInt({ min: 1, max: 100 })
       .withMessage("limit must be a number within 1-100")
+      .toInt()
       .optional(),
     query("sentiment")
       .isIn(sentiment)
@@ -74,7 +79,10 @@ const advancedSearchNewsValidation = () => {
     header("sources")
       .isIn(sources)
       .withMessage(`sources must be one of: ${sources.map((v) => v)}`),
-    header("sentiment").isBoolean().toBoolean(),
+    header("sentiment")
+      .isBoolean()
+      .withMessage("sentiment must be a boolean.")
+      .toBoolean(),
   ];
 };
 
@@ -83,20 +91,34 @@ const basicSearchNewsValidation = () => {
     query("offset")
       .isNumeric()
       .withMessage("offset must be a number.")
+      .toInt()
       .optional(),
     query("limit")
       .isInt({ min: 1, max: 100 })
       .withMessage("limit must be a number within 1-100")
+      .toInt()
       .optional(),
     query("q").isString().withMessage("q must be a string"),
     header("sources")
       .isIn(sources)
       .withMessage(`sources must be one of: ${sources.map((v) => v)}`),
-    header("sentiment").isBoolean().toBoolean(),
+    header("sentiment")
+      .isBoolean()
+      .withMessage("sentiment must be a boolean.")
+      .toBoolean(),
+  ];
+};
+
+const newsSourcesValidation = () => {
+  return [
+    header("sources")
+      .isIn(sources)
+      .withMessage(`sources must be one of: ${sources.map((v) => v)}`),
   ];
 };
 
 export {
+  newsSourcesValidation,
   getNewsValidation,
   advancedSearchNewsValidation,
   basicSearchNewsValidation,

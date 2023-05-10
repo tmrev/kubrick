@@ -1,5 +1,6 @@
 /* eslint-disable indent */
 import dayjs from "dayjs";
+import { Document } from "mongodb";
 import { mongoService } from "../..";
 import DB from "../../constants/db";
 import { SourceType } from "../../constants";
@@ -23,48 +24,80 @@ const searchNewsService = async (
 ) => {
   const db = mongoService.db(DB.name).collection(DB.collections.articles);
 
-  let findQuery: any = { $text: { $search: query.q } };
-
   const limitFilter = configureSource(sourceType);
 
-  findQuery = { ...findQuery, ...limitFilter };
+  const pipeline: Document[] = [];
+
+  pipeline.push({
+    $match: {
+      $text: { $search: query.q },
+      ...limitFilter,
+    },
+  });
 
   if (query.source) {
-    findQuery = { ...findQuery, source: query.source };
+    pipeline.push({
+      $match: {
+        source: query.source,
+      },
+    });
   }
 
   if (query.type) {
-    findQuery = { ...findQuery, type: query.type };
+    pipeline.push({
+      $match: {
+        type: query.type,
+      },
+    });
   }
 
   if (query.minDate) {
-    findQuery = {
-      ...findQuery,
-      publishedDate: { $gte: dayjs(query.minDate).format() },
-    };
+    pipeline.push({
+      $match: {
+        publishedDate: { $gte: dayjs(query.minDate).format() },
+      },
+    });
   }
 
   if (query.maxDate) {
-    findQuery = {
-      ...findQuery,
-      publishedDate: { $lt: dayjs(query.minDate).format() },
-    };
+    pipeline.push({
+      $match: {
+        publishedDate: { $lt: dayjs(query.minDate).format() },
+      },
+    });
   }
 
   if (query.sentiment) {
-    findQuery = {
-      ...findQuery,
-      sentiment: query.sentiment,
-    };
+    pipeline.push({
+      $match: {
+        sentiment: query.sentiment,
+      },
+    });
   }
 
-  console.log(findQuery);
+  pipeline.push({
+    $skip: query.offset || 0,
+  });
 
-  const results = await db
-    .find(findQuery)
-    .skip(Number(query.offset) || 0)
-    .limit(Number(query.limit) || 20)
-    .toArray();
+  pipeline.push({
+    $limit: query.limit || 20,
+  });
+
+  if (sentiment === false) {
+    pipeline.push({
+      $unset: "sentiment",
+    });
+  }
+
+  console.log(pipeline);
+
+  // const results = await db
+  //   .find(findQuery)
+  //   .skip(Number(query.offset) || 0)
+  //   .limit(Number(query.limit) || 20)
+  //   .toArray();
+
+  const results = await db.aggregate(pipeline).toArray();
 
   const totalArticles = await db.estimatedDocumentCount();
 

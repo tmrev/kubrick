@@ -3,6 +3,7 @@ const DB = {
   collections: {
     articles: "articles",
     tweets: "tweets",
+    sources: "sources",
   },
 };
 

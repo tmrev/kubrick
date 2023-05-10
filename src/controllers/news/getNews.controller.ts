@@ -3,9 +3,13 @@ import getNewsService from "../../services/news/getNews.service";
 
 const getNewsController = async (req: Request, res: Response) => {
   try {
-    const { sources } = req.headers;
+    const { sources, sentiment } = req.headers;
 
-    const movieResult = await getNewsService(req.query, sources as any);
+    const movieResult = await getNewsService(
+      req.query,
+      sources as any,
+      sentiment as any
+    );
 
     res.send(movieResult);
   } catch (error) {

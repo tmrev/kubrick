@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { Document } from "mongodb";
 import { mongoService } from "../..";
 import DB from "../../constants/db";
 import { SourceType } from "../../constants";
@@ -14,57 +15,85 @@ interface GetNewsQuery {
   type?: string;
 }
 
-const getNewsService = async (query: GetNewsQuery, sourceType: SourceType) => {
+const getNewsService = async (
+  query: GetNewsQuery,
+  sourceType: SourceType,
+  sentiment: boolean
+) => {
   const db = mongoService.db(DB.name).collection(DB.collections.articles);
 
-  let findQuery = {};
+  const pipeline: Document[] = [];
 
   const limitFilter = configureSource(sourceType);
 
-  findQuery = { ...findQuery, ...limitFilter };
+  pipeline.push({
+    $match: {
+      ...limitFilter,
+    },
+  });
 
   if (query.source) {
-    findQuery = { ...findQuery, source: query.source };
+    pipeline.push({
+      $match: {
+        source: query.source,
+      },
+    });
   }
 
   if (query.type) {
-    findQuery = { ...findQuery, type: query.type };
+    pipeline.push({
+      $match: {
+        type: query.type,
+      },
+    });
   }
 
   if (query.minDate) {
-    findQuery = {
-      ...findQuery,
-      publishedDate: { $gte: dayjs(query.minDate).format() },
-    };
+    pipeline.push({
+      $match: {
+        publishedDate: { $gte: dayjs(query.minDate).format() },
+      },
+    });
   }
 
   if (query.maxDate) {
-    findQuery = {
-      ...findQuery,
-      publishedDate: { $lt: dayjs(query.minDate).format() },
-    };
+    pipeline.push({
+      $match: {
+        publishedDate: { $lt: dayjs(query.minDate).format() },
+      },
+    });
   }
 
   if (query.sentiment) {
-    findQuery = {
-      ...findQuery,
-      sentiment: query.sentiment,
-    };
+    pipeline.push({
+      $match: {
+        sentiment: query.sentiment,
+      },
+    });
   }
 
-  const results = await db
-    .find(findQuery)
-    .sort({ publishedDate: -1 })
-    .skip(Number(query.offset) || 0)
-    .limit(Number(query.limit) || 20)
-    .toArray();
+  pipeline.push({
+    $skip: query.offset || 0,
+  });
 
-  const count = await db.estimatedDocumentCount();
+  pipeline.push({
+    $limit: query.limit || 20,
+  });
+
+  if (sentiment === false) {
+    pipeline.push({
+      $unset: "sentiment",
+    });
+  }
+
+  const results = await db.aggregate(pipeline).toArray();
+
+  const totalArticles = await db.estimatedDocumentCount();
 
   return {
     success: true,
     body: {
-      count,
+      totalArticles,
       results,
     },
   };
