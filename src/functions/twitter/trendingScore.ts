@@ -1,29 +1,43 @@
 import dayjs from "dayjs";
 import { RetrieveTweets } from "./retrieveTweets";
 
-function calculateTrendingScore(tweet: RetrieveTweets) {
-  const recencyWeight = 0.5;
-  const viewsWeight = 0.2;
-  const likesWeight = 0.3;
-  const commentsWeight = 0.15;
-  const repostWeight = 0.15;
-  const quoteWeight = 0.15;
-  const urlWeight = 1;
-  const imgWeight = 1;
-  const hashTagWeight = 0.15;
+import buzzWords from "../../data/newsBuzzWords.json";
 
+function calculateTrendingScore(tweet: RetrieveTweets) {
+  if (!tweet || !tweet.metrics) {
+    throw new Error("Invalid tweet data");
+  }
+
+  const recencyWeight = 0.1;
+  const viewsWeight = 0.5;
+  const likesWeight = 0.25;
+  const commentsWeight = 0.1;
+  const repostWeight = 0.1;
+  const quoteWeight = 0.1;
+  const urlWeight = 0.1;
+  const imgWeight = 0.1;
+  const hashTagWeight = 0.1;
+  const newsWordsWeight = 0.15;
+
+  const newsWordsScore = buzzWords.some((word) =>
+    tweet.title.toLowerCase().includes(word)
+  )
+    ? 1
+    : 0;
   const currentTime = new Date();
-  const publishedDate = dayjs(tweet.publishedDate).millisecond();
-  const timeDifference =
-    Math.abs(dayjs(currentTime).millisecond() - publishedDate) / 36e5; // Difference in hours
-  const recencyScore = Math.max(0, 1 - timeDifference / 168); // 168 hours in a week
+  const timeDifference = dayjs(currentTime).diff(
+    dayjs(tweet.publishedDate),
+    "day"
+  );
+  const recencyScore = Math.exp(-recencyWeight * timeDifference);
+
   const viewsScore = tweet.metrics.impressions;
   const likesScore = tweet.metrics.likes;
   const commentsScore = tweet.metrics.replies;
   const repostScore = tweet.metrics.retweets;
   const quoteScore = tweet.metrics.quotes;
-  const urlScore = tweet.url ? 10 : -15000;
-  const imgScore = tweet.img ? 10 : -15000;
+  const urlScore = tweet.url ? 1 : -500000;
+  const imgScore = tweet.img ? 1 : -500000;
   const hashTagScore = tweet.hashtags ? tweet.hashtags.length : 0;
 
   const scoreBreakDown = {
@@ -36,18 +50,12 @@ function calculateTrendingScore(tweet: RetrieveTweets) {
     url: urlWeight * urlScore,
     img: imgWeight * imgScore,
     hashTag: hashTagWeight * hashTagScore,
+    newsWords: newsWordsWeight * newsWordsScore,
   };
 
-  const trendingScore =
-    recencyWeight * recencyScore +
-    viewsWeight * viewsScore +
-    likesWeight * likesScore +
-    commentsWeight * commentsScore +
-    repostWeight * repostScore +
-    quoteWeight * quoteScore +
-    urlWeight * urlScore +
-    imgWeight * imgScore +
-    hashTagWeight * hashTagScore;
+  const trendingScore = Object.values(scoreBreakDown).reduce(
+    (prev, curr) => prev + curr
+  );
 
   return {
     scoreBreakDown,

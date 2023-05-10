@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { Daum, TweetResponse } from "../../models/twitter";
 import { Payload } from "../../utils/parseSearchResult";
 import { TWITTER_TOKEN } from "../../constants";
+import cleanText from "../../utils/cleanText";
 
 export interface RetrieveTweets extends Payload {
   hashtags?: string[];
@@ -33,8 +34,8 @@ async function retrieveTweets(userId: string) {
 
     const extractUrl = (tweet: Daum) => {
       const extractedData = {
-        title: tweet.text,
-        url: "",
+        title: cleanText(tweet.text),
+        url: ``, // https://twitter.com/${tweet.author_id}/status/${tweet.id},
         img: "",
         snippet: "",
         hashtags: [],
@@ -47,10 +48,10 @@ async function retrieveTweets(userId: string) {
       if (urls && urls.length) {
         urls.forEach((url) => {
           if (url.title) {
-            extractedData.title = url.title;
+            extractedData.title = cleanText(url.title);
           }
           if (url.description) {
-            extractedData.snippet = url.description;
+            extractedData.snippet = cleanText(url.description);
           }
           if (url.images && url.images.length) {
             extractedData.img = url.images[0].url;

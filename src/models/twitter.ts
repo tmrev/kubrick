@@ -5,6 +5,7 @@ export interface TweetResponse {
 }
 
 export interface Daum {
+  author_id: string;
   created_at: string;
   edit_history_tweet_ids: string[];
   entities: Entities;
