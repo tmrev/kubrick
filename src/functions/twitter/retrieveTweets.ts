@@ -35,7 +35,7 @@ async function retrieveTweets(userId: string) {
     const extractUrl = (tweet: Daum) => {
       const extractedData = {
         title: cleanText(tweet.text),
-        url: ``, // https://twitter.com/${tweet.author_id}/status/${tweet.id},
+        url: `https://twitter.com/${tweet.author_id}/status/${tweet.id}`,
         img: "",
         snippet: "",
         hashtags: [],
@@ -89,7 +89,7 @@ async function retrieveTweets(userId: string) {
         hashtags,
         publishedDate: dayjs(tweet.created_at).format("MM/DD/YYYY"),
         author: userId,
-        type: "Twitter",
+        type: url.includes("twitter") ? "Tweet" : "Article",
       };
 
       payload.push(formattedData);

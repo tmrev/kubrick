@@ -1,28 +1,23 @@
+import { mongoService } from "../..";
 import retrieveTweets, {
   RetrieveTweets,
 } from "../../functions/twitter/retrieveTweets";
 import getTrendingNews from "../../functions/twitter/trendingScore";
 
-const Ids = [
-  "290758912",
-  "586032653",
-  "17525171",
-  "17446621",
-  "13992132",
-  "14892220",
-  "18950402",
-  "14983499",
-  "20108560",
-  "62454048",
-  "3646911",
-  "21904217",
-  "23560015",
-];
-
 const trendingNewsService = async () => {
   const data: RetrieveTweets[] = [];
 
-  const pendingPromise = Ids.map((id) => retrieveTweets(id));
+  const tweetDB = mongoService.db("news").collection("tweets");
+  const sourceDB = mongoService.db("news").collection("sources");
+  const bulkTweets = tweetDB.initializeUnorderedBulkOp();
+
+  const twitterSources = await sourceDB
+    .find({ tier: "TWITTER_SOURCES" })
+    .toArray();
+
+  const pendingPromise = twitterSources.map((twitterSource: any) =>
+    retrieveTweets(twitterSource.accountId)
+  );
 
   const resolvedPromise = await Promise.allSettled(pendingPromise);
 
@@ -34,9 +29,30 @@ const trendingNewsService = async () => {
     }
   });
 
+  const trendingData = getTrendingNews(data);
+
+  trendingData.forEach((tweet) => {
+    bulkTweets
+      .find({
+        title: tweet.title,
+        author: tweet.author,
+      })
+      .upsert()
+      .replaceOne({ ...tweet });
+  });
+
+  bulkTweets.execute();
+
   return {
     success: true,
-    body: getTrendingNews(data),
+    body: trendingData.map((tweet) => ({
+      title: tweet.title,
+      url: tweet.url,
+      snippet: tweet.snippet,
+      publishedDate: tweet.publishedDate,
+      author: tweet.author,
+      type: tweet.type,
+    })),
   };
 };
 
