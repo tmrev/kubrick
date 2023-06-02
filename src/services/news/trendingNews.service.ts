@@ -52,6 +52,7 @@ const trendingNewsService = async () => {
       publishedDate: tweet.publishedDate,
       author: tweet.author,
       type: tweet.type,
+      img: tweet.img,
     })),
   };
 };
